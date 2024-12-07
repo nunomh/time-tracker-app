@@ -1,4 +1,5 @@
 import "./global.css";
+import Link from "next/link";
 
 export const metadata = {
   title: "Next.js",
@@ -9,9 +10,32 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <header>Time Tracker App</header>
-        {children}
-        <footer>footer</footer>
+        <header className="bg-gray-100 shadow-md">
+          <div className="navbar bg-base-100">
+            <div className="container mx-auto">
+              <div className="flex-1">
+                <Link href={"/"} className="btn btn-ghost text-xl">
+                  Time Tracker
+                </Link>
+              </div>
+              <div className="flex-none">
+                <ul className="menu menu-horizontal px-1">
+                  <li>
+                    <a>Settings</a>
+                  </li>
+                  <li>
+                    <Link href="/login">Log In</Link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </header>
+        <main className="container mx-auto p-10">{children}</main>
+
+        <footer className="text-gray-400 text-center text-xs py-5">
+          <p>github.com/nunomh - 2024</p>
+        </footer>
       </body>
     </html>
   );

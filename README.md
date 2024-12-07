@@ -8,6 +8,7 @@ https://time-tracker-app-cv9m.onrender.com/
 
 - Next.js
 - Tailwind CSS
+- DaisyUI (Components for Tailwind)
 
 ## Installation and running
 
