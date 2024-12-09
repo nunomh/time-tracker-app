@@ -1,6 +1,9 @@
 "use server"
 
-import { getCollection } from "../lib/db.js"
+import { getCollection } from "../lib/db.js";
+import bcrypt from "bcrypt";
+import { cookies } from "next/headers.js";
+import jwt from "jsonwebtoken";
 
 function isAlphaNumeric(x)
 {
@@ -37,11 +40,25 @@ export const register = async function (prevState, formData)
         return { errors, success: false }
     }
 
+    // hash password
+    const salt = bcrypt.genSaltSync(10);
+    ourUser.password = bcrypt.hashSync(ourUser.password, salt);
+
     // storing a new user in the database
     const usersCollection = await getCollection("users");
-    await usersCollection.insertOne(ourUser);
+    const newUser = await usersCollection.insertOne(ourUser);
+    const userId = newUser.insertedId.toString();
+
+    // create jwt value
+    const jwtValue = jwt.sign({ username: ourUser.username, exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7 }, process.env.JWTSECRET);
 
     // log the user in by giving them a cookie
+    (await cookies()).set("timetrackerapp", jwtValue, {
+        httpOnly: true,
+        sameSite: "strict",
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+        secure: true
+    })
 
     return { success: true }
 }
