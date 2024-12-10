@@ -7,8 +7,6 @@ import React from "react";
 export default function RegisterForm() {
   const [formState, formAction] = React.useActionState(register, {});
 
-  console.log(formState);
-
   return (
     <form action={formAction} className="max-w-xs mx-auto">
       <div className="mb-3">
