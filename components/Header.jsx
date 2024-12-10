@@ -19,7 +19,10 @@ export default async function Header() {
               {user && (
                 <>
                   <li>
-                    <a>Settings</a>
+                    <Link href="/tasks">Tasks</Link>
+                  </li>
+                  <li>
+                    <Link href="/categories">Categories</Link>
                   </li>
                   <li>
                     <form action={logout}>

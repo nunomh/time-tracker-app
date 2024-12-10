@@ -80,6 +80,11 @@ export const register = async function (prevState, formData)
     if (!isAlphaNumeric(ourUser.username)) errors.username = "You can only use letters and numbers in your username";
     if (ourUser.username == "") errors.username = "You must enter a username";
 
+    // see if username already exists or not
+    const usersCollection = await getCollection("users");
+    const existingUser = await usersCollection.findOne({ username: ourUser.username });
+    if (existingUser) errors.username = "Username is already taken";
+
     if (ourUser.password.length < 8) errors.password = "Password must be at least 8 characters long";
     if (ourUser.password.length > 30) errors.password = "Password cannot be longer than 30 characters";
     if (ourUser.password == "") errors.password = "You must enter a password";
@@ -94,7 +99,6 @@ export const register = async function (prevState, formData)
     ourUser.password = bcrypt.hashSync(ourUser.password, salt);
 
     // storing a new user in the database
-    const usersCollection = await getCollection("users");
     const newUser = await usersCollection.insertOne(ourUser);
     const userId = newUser.insertedId.toString();
 
