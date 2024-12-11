@@ -1,7 +1,25 @@
 "use server"
 
+import { ObjectId } from "mongodb";
 import { getCollection } from "../lib/db.js";
 import { getUserFromCookie } from "../lib/getUser";
+
+
+export const getCategories = async function (userId)
+{
+    const categoriesCollection = await getCollection("categories");
+    const categories = await categoriesCollection
+        .find({ author: new ObjectId(userId) })
+        .sort()
+        .toArray();
+
+    // Convert _id to a plain string
+    return categories.map(category => ({
+        ...category,
+        _id: category._id.toString(),
+        author: category.author?.toString()
+    }));
+};
 
 export const createCategory = async function (prevState, formData)
 {
@@ -11,7 +29,7 @@ export const createCategory = async function (prevState, formData)
 
     const myCategory = {
         name: formData.get("category"),
-        userId: user.userId
+        author: ObjectId.createFromHexString(user.userId)
     }
 
     if (typeof myCategory.name != "string") myCategory.name = "";
