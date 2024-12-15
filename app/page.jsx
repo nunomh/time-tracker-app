@@ -1,4 +1,6 @@
+import NewTackForm from "../components/NewTrackForm";
 import RegisterForm from "../components/RegisterForm";
+import TracksTable from "../components/TracksTable";
 import { getUserFromCookie } from "../lib/getUser";
 
 export default async function Page() {
@@ -12,6 +14,10 @@ export default async function Page() {
           <h1>Welcome, {user.name}!</h1>
           <div>
             <p> Create a new track:</p>
+            <NewTackForm />
+          </div>
+          <div>
+            <TracksTable />
           </div>
         </>
       )}

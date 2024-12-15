@@ -9,7 +9,7 @@ export default function Page() {
 
   useEffect(() => {
     async function fetchCategories() {
-      const result = await getCategories("67585fd15f7081bbe0ddecd3");
+      const result = await getCategories();
       setCategories(result);
     }
     fetchCategories();

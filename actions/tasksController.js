@@ -14,7 +14,7 @@ export const createTask = async function (prevState, formData)
     const myTask = {
         name: formData.get("task"),
         categoryId: new ObjectId(formData.get("category")),
-        userId: new ObjectId(user.userId)
+        author: new ObjectId(user.userId)
     }
 
     if (typeof myTask.name != "string") myTask.name = "";
@@ -33,4 +33,21 @@ export const createTask = async function (prevState, formData)
     const newTask = await tasksCollection.insertOne(myTask);
 
     return { success: true }
+}
+
+export const getTasks = async function ()
+{
+    const user = await getUserFromCookie();
+    const tasksCollection = await getCollection("tasks");
+    const tasks = await tasksCollection
+        .find({ author: new ObjectId(user.userId) })
+        .sort()
+        .toArray();
+
+    // Convert _id to a plain string
+    return tasks.map(task => ({
+        ...task,
+        _id: task._id.toString(),
+        author: task.author?.toString()
+    }));
 }
