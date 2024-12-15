@@ -1,5 +1,6 @@
 "use server"
 
+import { ObjectId } from "mongodb";
 import { getCollection } from "../lib/db.js";
 import { getUserFromCookie } from "../lib/getUser";
 import { getCategoryById } from "./categoryController.js";
@@ -12,7 +13,8 @@ export const createTask = async function (prevState, formData)
 
     const myTask = {
         name: formData.get("task"),
-        userId: user.userId
+        categoryId: new ObjectId(formData.get("category")),
+        userId: new ObjectId(user.userId)
     }
 
     if (typeof myTask.name != "string") myTask.name = "";

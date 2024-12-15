@@ -5,11 +5,12 @@ import { getCollection } from "../lib/db.js";
 import { getUserFromCookie } from "../lib/getUser";
 
 
-export const getCategories = async function (userId)
+export const getCategories = async function ()
 {
+    const user = await getUserFromCookie();
     const categoriesCollection = await getCollection("categories");
     const categories = await categoriesCollection
-        .find({ author: new ObjectId(userId) })
+        .find({ author: new ObjectId(user.userId) })
         .sort()
         .toArray();
 

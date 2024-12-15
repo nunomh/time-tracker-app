@@ -15,7 +15,7 @@ export default function Page() {
     fetchCategories();
   }, []);
 
-  console.log(categories);
+  // console.log(categories);
 
   const [formState, formAction] = React.useActionState(createTask, {});
 
@@ -49,6 +49,16 @@ export default function Page() {
               <span>{formState.errors?.category}</span>
             </div>
           )}
+        </div>
+        <div>
+          <label htmlFor="category">Choose a category:</label>
+          <select id="category" name="category">
+            {categories.map((category) => (
+              <option key={category._id} value={category._id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
         </div>
         <button className="btn btn-primary">Submit</button>
       </form>

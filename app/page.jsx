@@ -3,10 +3,18 @@ import { getUserFromCookie } from "../lib/getUser";
 
 export default async function Page() {
   const user = await getUserFromCookie();
+  console.log(user);
 
   return (
     <>
-      {user && <p>You are logged in</p>}
+      {user && (
+        <>
+          <h1>Welcome, {user.name}!</h1>
+          <div>
+            <p> Create a new track:</p>
+          </div>
+        </>
+      )}
       {!user && (
         <>
           <p className="text-center text-2xl text-gray-600 mb-5">
