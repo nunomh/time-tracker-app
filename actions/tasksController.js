@@ -44,10 +44,12 @@ export const getTasks = async function ()
         .sort()
         .toArray();
 
-    // Convert _id to a plain string
+    // Convert _id and categoryId to plain strings
     return tasks.map(task => ({
-        ...task,
         _id: task._id.toString(),
+        name: task.name,
+        categoryId: task.categoryId.toString(),
         author: task.author?.toString()
     }));
 }
+

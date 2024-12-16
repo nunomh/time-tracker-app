@@ -1,6 +1,5 @@
 "use client";
 
-import { useFormState, useFormStatus } from "react-dom";
 import React, { useState, useEffect } from "react";
 import { getTracks } from "../actions/trackController";
 
@@ -15,8 +14,6 @@ export default function TracksTable() {
     fetchTracks();
   }, []);
 
-  console.log("tracks", tracks);
-
   return (
     <table border="1" style={{ width: "100%", borderCollapse: "collapse" }}>
       <thead>
@@ -27,7 +24,7 @@ export default function TracksTable() {
       </thead>
       <tbody>
         {tracks.map((track) => (
-          <tr key={track._id}>
+          <tr key={track.categoryId}>
             <td style={{ padding: "8px" }}>{track.categoryName}</td>
             <td style={{ padding: "8px" }}>
               {(track.totalTime / 60).toFixed(2)} hours

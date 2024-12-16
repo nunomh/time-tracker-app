@@ -15,8 +15,6 @@ export default function Page() {
     fetchCategories();
   }, []);
 
-  // console.log(categories);
-
   const [formState, formAction] = React.useActionState(createTask, {});
 
   return (

@@ -16,7 +16,6 @@ export default function NewTackForm() {
     fetchTasks();
   }, []);
 
-  // console.log("tasks", tasks);
   const [formState, formAction] = React.useActionState(createTrack, {});
 
   return (

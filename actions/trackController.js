@@ -6,8 +6,6 @@ import { getUserFromCookie } from "../lib/getUser";
 
 export const createTrack = async function (prevState, formData)
 {
-    console.log(formData);
-
     const user = await getUserFromCookie();
 
     const taskValue = formData.get("task"); // Get the combined value
@@ -17,6 +15,7 @@ export const createTrack = async function (prevState, formData)
 
     const myTrack = {
         time: parseInt(formData.get("time")),
+        createdDate: new Date(),
         taskId: new ObjectId(taskId),
         categoryId: new ObjectId(categoryId),
         author: new ObjectId(user.userId),
@@ -90,4 +89,62 @@ export const getTracks = async function ()
         .toArray();
 
     return tracks;
+};
+
+export const getRecentTracksFromUser = async function (limit = 10)
+{
+    const user = await getUserFromCookie();
+    const tracksCollection = await getCollection("tracks");
+    const tasksCollection = await getCollection("tasks");
+
+    const tracks = await tracksCollection.aggregate([
+        {
+            $match: { author: new ObjectId(user.userId) }
+        },
+        {
+            $lookup: {
+                from: "tasks",
+                localField: "taskId",
+                foreignField: "_id",
+                as: "taskInfo"
+            }
+        },
+        {
+            $unwind: {
+                path: "$taskInfo",
+                preserveNullAndEmptyArrays: true
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                trackId: { $toString: "$_id" },
+                time: 1,
+                taskName: "$taskInfo.name",
+                author: { $toString: "$author" },
+                createdDate: 1
+            }
+        },
+        {
+            $sort: { createdDate: -1 }
+        },
+        {
+            $limit: limit
+        }
+    ]).toArray();
+
+    return tracks;
+};
+
+export const deleteTrack = async function (trackId)
+{
+    const tracksCollection = await getCollection("tracks");
+    const result = await tracksCollection.deleteOne({ _id: new ObjectId(trackId) });
+
+    if (result.deletedCount === 0)
+    {
+        return { success: false, errors: { trackId: "Track not found" } };
+    }
+
+    return { success: true };
 };
