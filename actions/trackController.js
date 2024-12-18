@@ -91,6 +91,65 @@ export const getTracks = async function ()
     return tracks;
 };
 
+export const getTasksTimeTable = async function ()
+{
+    const user = await getUserFromCookie();
+    const tracksCollection = await getCollection("tracks");
+    const tasksCollection = await getCollection("tasks");
+
+    // Aggregate data grouped by categoryId
+    const tracks = await tracksCollection
+        .aggregate([
+            {
+                $match: { author: new ObjectId(user.userId) }
+            },
+            {
+                $lookup: {
+                    from: "tasks",
+                    localField: "taskId",
+                    foreignField: "_id",
+                    as: "taskInfo"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$taskInfo",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $group: {
+                    _id: "$taskId",
+                    taskName: { $first: "$taskInfo.name" },
+                    totalTime: { $sum: "$time" },
+                    tracks: {
+                        $push: {
+                            _id: { $toString: "$_id" },
+                            time: "$time",
+                            // taskId: { $toString: "$taskId" },
+                            author: { $toString: "$author" }
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    taskId: { $toString: "$_id" },
+                    taskName: 1,
+                    totalTime: 1,
+                    tracks: 1
+                }
+            },
+            {
+                $sort: { totalTime: -1 } // Sorting by total time, change as needed
+            }
+        ])
+        .toArray();
+    console.log(tracks);
+    return tracks;
+};
+
 export const getRecentTracksFromUser = async function (limit = 10)
 {
     const user = await getUserFromCookie();
@@ -134,6 +193,45 @@ export const getRecentTracksFromUser = async function (limit = 10)
     ]).toArray();
 
     return tracks;
+};
+
+export const getAllTracksAndSumTime = async function ()
+{
+    const user = await getUserFromCookie(); // Fetch the authenticated user
+    const tracksCollection = await getCollection("tracks"); // Get the tracks collection
+
+    const result = await tracksCollection.aggregate([
+        {
+            $match: { author: new ObjectId(user.userId) } // Match only tracks belonging to the user
+        },
+        {
+            $group: {
+                _id: "$author", // Group all tracks by the user
+                totalTracks: { $sum: 1 }, // Count the total number of tracks
+                totalTime: { $sum: "$time" }, // Sum up the "time" field
+                tracks: {
+                    $push: {
+                        _id: { $toString: "$_id" },
+                        time: "$time",
+                        taskId: { $toString: "$taskId" },
+                        categoryId: { $toString: "$categoryId" },
+                        createdDate: "$createdDate"
+                    }
+                }
+            }
+        },
+        {
+            $project: {
+                _id: 0, // Exclude the group ID from the final output
+                userId: { $toString: "$_id" },
+                totalTracks: 1,
+                totalTime: 1,
+                tracks: 1
+            }
+        }
+    ]).toArray();
+
+    return result[0]; // Return the aggregated result for the user
 };
 
 export const deleteTrack = async function (trackId)

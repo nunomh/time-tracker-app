@@ -40,7 +40,18 @@ export default function RecentTracksList() {
             </td>
             <td style={{ padding: "8px" }}>
               {track.createdDate
-                ? new Date(track.createdDate).toLocaleString()
+                ? `${new Date(track.createdDate).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}, ${new Date(track.createdDate).toLocaleTimeString(
+                    "en-GB",
+                    {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                    }
+                  )}`
                 : "N/A"}
             </td>
           </tr>

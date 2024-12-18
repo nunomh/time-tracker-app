@@ -41,7 +41,7 @@ export const login = async function (prevState, formData)
     }
 
     // create jwt value
-    const ourTokenValue = jwt.sign({ name: user.username, userId: user._id, exp: Math.floor(Date.now() / 1000 + 60 * 60 * 24) }, process.env.JWTSECRET)
+    const ourTokenValue = jwt.sign({ name: user.username, userId: user._id, createdDate: user.createdDate, exp: Math.floor(Date.now() / 1000 + 60 * 60 * 24) }, process.env.JWTSECRET)
 
     // log the user in by giving them a cookie
     cookies().set("timetrackerapp", ourTokenValue, {
@@ -56,9 +56,11 @@ export const login = async function (prevState, formData)
 
 export const logout = async function ()
 {
-    cookies().delete("timetrackerapp");
+    const cookieStore = await cookies();
+    await cookieStore.delete("timetrackerapp");
     redirect("/");
 }
+
 
 export const register = async function (prevState, formData)
 {
@@ -66,7 +68,8 @@ export const register = async function (prevState, formData)
 
     const ourUser = {
         username: formData.get("username"),
-        password: formData.get("password")
+        password: formData.get("password"),
+        createdDate: new Date()
     }
 
     if (typeof ourUser.username != "string") ourUser.username = "";
@@ -100,10 +103,11 @@ export const register = async function (prevState, formData)
 
     // storing a new user in the database
     const newUser = await usersCollection.insertOne(ourUser);
+    console.log(newUser)
     const userId = newUser.insertedId.toString();
 
     // create jwt value
-    const jwtValue = jwt.sign({ name: user.username, userId: userId, exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7 }, process.env.JWTSECRET);
+    const jwtValue = jwt.sign({ name: ourUser.username, userId: userId, createdDate: new Date(), exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7 }, process.env.JWTSECRET);
 
     // log the user in by giving them a cookie
     (await cookies()).set("timetrackerapp", jwtValue, {

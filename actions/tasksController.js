@@ -52,4 +52,3 @@ export const getTasks = async function ()
         author: task.author?.toString()
     }));
 }
-

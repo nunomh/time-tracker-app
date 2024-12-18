@@ -1,17 +1,17 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { getTracks } from "../actions/trackController";
+import { getTasksTimeTable } from "../actions/trackController";
 
-export default function TracksTable() {
-  const [tracks, setTracks] = useState([]);
+export default function TasksTimeTable() {
+  const [tracks, setTasks] = useState([]);
 
   useEffect(() => {
-    async function fetchTracks() {
-      const result = await getTracks();
-      setTracks(result);
+    async function fetchTasks() {
+      const result = await getTasksTimeTable();
+      setTasks(result);
     }
-    fetchTracks();
+    fetchTasks();
   }, []);
 
   return (
@@ -19,14 +19,14 @@ export default function TracksTable() {
       <table border="1" style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr>
-            <th style={{ padding: "8px", textAlign: "left" }}>Category Name</th>
+            <th style={{ padding: "8px", textAlign: "left" }}>Task Name</th>
             <th style={{ padding: "8px", textAlign: "left" }}>Time</th>
           </tr>
         </thead>
         <tbody>
           {tracks.map((track) => (
-            <tr key={track.categoryId}>
-              <td style={{ padding: "8px" }}>{track.categoryName}</td>
+            <tr key={track.taskId}>
+              <td style={{ padding: "8px" }}>{track.taskName}</td>
               <td style={{ padding: "8px" }}>
                 {(track.totalTime / 60).toFixed(2)} hours
               </td>
