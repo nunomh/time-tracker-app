@@ -57,11 +57,11 @@ export default function InteractivePage({ user }) {
         <RecentTracksList key={refreshKey} />
       </div>
       <div className="mt-5">
-        <p>Total Category time:</p>
+        <p>Category Times:</p>
         <TracksTable key={refreshKey} />
       </div>
       <div className="mt-5">
-        <p>Total Task time:</p>
+        <p>Recent Tasks Total Time:</p>
         <TasksTimeTable key={refreshKey} />
       </div>
     </>

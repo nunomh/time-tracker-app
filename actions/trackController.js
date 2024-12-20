@@ -127,7 +127,8 @@ export const getTasksTimeTable = async function ()
                             _id: { $toString: "$_id" },
                             time: "$time",
                             // taskId: { $toString: "$taskId" },
-                            author: { $toString: "$author" }
+                            author: { $toString: "$author" },
+                            createdDate: "$createdDate"
                         }
                     }
                 }
@@ -146,8 +147,19 @@ export const getTasksTimeTable = async function ()
             }
         ])
         .toArray();
-    console.log(tracks);
-    return tracks;
+
+    return tracks.sort((a, b) =>
+    {
+        const mostRecentA = a.tracks.reduce((latest, track) =>
+        {
+            return track.createdDate > latest.createdDate ? track : latest;
+        }, a.tracks[0]).createdDate;
+        const mostRecentB = b.tracks.reduce((latest, track) =>
+        {
+            return track.createdDate > latest.createdDate ? track : latest;
+        }, b.tracks[0]).createdDate;
+        return mostRecentB - mostRecentA;
+    });
 };
 
 export const getRecentTracksFromUser = async function (limit = 10)

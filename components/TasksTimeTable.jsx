@@ -9,6 +9,7 @@ export default function TasksTimeTable() {
   useEffect(() => {
     async function fetchTasks() {
       const result = await getTasksTimeTable();
+      console.log(result);
       setTasks(result);
     }
     fetchTasks();
