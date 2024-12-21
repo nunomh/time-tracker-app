@@ -23,40 +23,55 @@ export default function RecentTracksList() {
   }, []);
 
   return (
-    <table border="1" style={{ width: "100%", borderCollapse: "collapse" }}>
-      <thead>
-        <tr>
-          <th style={{ padding: "8px", textAlign: "left" }}>Task Name</th>
-          <th style={{ padding: "8px", textAlign: "left" }}>Time</th>
-          <th style={{ padding: "8px", textAlign: "left" }}>Created Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        {tracks.map((track) => (
-          <tr key={track.trackId}>
-            <td style={{ padding: "8px" }}>{track.taskName}</td>
-            <td style={{ padding: "8px" }}>
-              {(track.time / 60).toFixed(2)} hours
-            </td>
-            <td style={{ padding: "8px" }}>
-              {track.createdDate
-                ? `${new Date(track.createdDate).toLocaleDateString("en-GB", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })}, ${new Date(track.createdDate).toLocaleTimeString(
-                    "en-GB",
-                    {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      second: "2-digit",
-                    }
-                  )}`
-                : "N/A"}
-            </td>
+    <div className="mx-auto max-w-screen-md mt-10">
+      <h1 className="text-md font-bold text-center mb-10">Recent Tracks</h1>
+      <table className="table-auto w-full">
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="p-4">Task Name</th>
+            <th className="p-4">Time</th>
+            <th className="p-4">Created Date</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {tracks.length === 0 ? (
+            <tr>
+              <td colSpan={3} className="p-4 text-center">
+                Loading...
+              </td>
+            </tr>
+          ) : (
+            tracks.map((track, index) => (
+              <tr
+                key={track.trackId}
+                className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}
+              >
+                <td className="p-4">{track.taskName}</td>
+                <td className="p-4">{(track.time / 60).toFixed(2)} hours</td>
+                <td className="p-4">
+                  {track.createdDate
+                    ? `${new Date(track.createdDate).toLocaleDateString(
+                        "en-GB",
+                        {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        }
+                      )}, ${new Date(track.createdDate).toLocaleTimeString(
+                        "en-GB",
+                        {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        }
+                      )}`
+                    : "N/A"}
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
   );
 }

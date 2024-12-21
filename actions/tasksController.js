@@ -39,16 +39,36 @@ export const getTasks = async function ()
 {
     const user = await getUserFromCookie();
     const tasksCollection = await getCollection("tasks");
-    const tasks = await tasksCollection
-        .find({ author: new ObjectId(user.userId) })
-        .sort()
-        .toArray();
+    const categoriesCollection = await getCollection("categories");
 
-    // Convert _id and categoryId to plain strings
-    return tasks.map(task => ({
-        _id: task._id.toString(),
-        name: task.name,
-        categoryId: task.categoryId.toString(),
-        author: task.author?.toString()
-    }));
+    const tasks = await tasksCollection.aggregate([
+        {
+            $match: { author: new ObjectId(user.userId) }
+        },
+        {
+            $lookup: {
+                from: "categories",
+                localField: "categoryId",
+                foreignField: "_id",
+                as: "categoryInfo"
+            }
+        },
+        {
+            $unwind: {
+                path: "$categoryInfo",
+                preserveNullAndEmptyArrays: true
+            }
+        },
+        {
+            $project: {
+                _id: { $toString: "$_id" },
+                name: 1,
+                categoryId: { $toString: "$categoryId" },
+                categoryName: "$categoryInfo.name",
+                author: { $toString: "$author" }
+            }
+        }
+    ]).toArray();
+
+    return tasks;
 }

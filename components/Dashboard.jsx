@@ -31,39 +31,40 @@ export default function InteractivePage({ user }) {
   };
 
   return (
-    <>
-      <h1>Welcome back, {user.name}!</h1>
-      <small>
-        tracking since{" "}
-        {user.createdDate
-          ? new Date(user.createdDate).toLocaleDateString("en-GB", {
-              day: "2-digit",
-              month: "long",
-              year: "numeric",
-            })
-          : "N/A"}
-      </small>
-      <br />
-      <small>
-        {totalTime !== null
-          ? `${(totalTime / 60).toFixed(2)} hours tracked`
-          : "Loading..."}
-      </small>
-      <div className="mt-5">
+    <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12">
+      <div className="">
+        <h1 className="text-md font-bold">Welcome back, {user.name}!</h1>
+        <small className="text-sm text-gray-500">
+          tracking since{" "}
+          {user.createdDate
+            ? new Date(user.createdDate).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+              })
+            : "N/A"}
+        </small>
+      </div>
+      <div className="">
+        <p className="text-md text-gray-600">
+          You have tracked a total of{" "}
+          {totalTime !== null
+            ? `${(totalTime / 60).toFixed(2)} hours`
+            : "Loading..."}
+        </p>
+      </div>
+      <div className="mt-10">
         <NewTackForm onSuccess={handleFormSuccess} />
       </div>
-      <div>
-        <p>Recent tracks:</p>
+      <div className="mt-10">
         <RecentTracksList key={refreshKey} />
       </div>
-      <div className="mt-5">
-        <p>Category Times:</p>
-        <TracksTable key={refreshKey} />
-      </div>
-      <div className="mt-5">
-        <p>Recent Tasks Total Time:</p>
+      <div className="mt-10">
         <TasksTimeTable key={refreshKey} />
       </div>
-    </>
+      <div className="mt-10">
+        <TracksTable key={refreshKey} />
+      </div>
+    </div>
   );
 }

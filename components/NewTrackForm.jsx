@@ -42,11 +42,13 @@ export default function NewTackForm({ onSuccess }) {
       <div className="mb-3">
         <label htmlFor="task">Choose a task:</label>
         <select id="task" name="task">
-          {tasks.map((task) => (
-            <option key={task._id} value={`${task._id}:${task.categoryId}`}>
-              {task.name}
-            </option>
-          ))}
+          {tasks.length > 0 &&
+            tasks.map((task) => (
+              <option key={task._id} value={`${task._id}:${task.categoryId}`}>
+                {task.name}
+              </option>
+            ))}
+          {tasks.length === 0 && <option>Loading tasks...</option>}
         </select>
       </div>
       <button className="mb-3 btn btn-primary">Create Track</button>
