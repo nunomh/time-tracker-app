@@ -2,20 +2,41 @@
 
 import React, { useState, useEffect } from "react";
 import { createTask } from "../../actions/tasksController";
-import { getCategories } from "../../actions/categoryController";
+import { getCategoriesFromUser } from "../../actions/categoryController";
+import { getTasksFromUser } from "../../actions/tasksController";
 
 export default function Page() {
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    async function fetchTasks() {
+      const result = await getTasksFromUser();
+      setTasks(result);
+    }
+    fetchTasks();
+  }, []);
+
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     async function fetchCategories() {
-      const result = await getCategories();
+      const result = await getCategoriesFromUser();
       setCategories(result);
     }
     fetchCategories();
   }, []);
 
-  const [formState, formAction] = React.useActionState(createTask, {});
+  const [formState, formAction] = React.useActionState(
+    async (prevState, formData) => {
+      const result = await createTask(prevState, formData);
+      if (result.success) {
+        const updatedTasks = await getTasksFromUser();
+        setTasks(updatedTasks);
+      }
+      return result;
+    },
+    {}
+  );
 
   return (
     <>
@@ -60,6 +81,39 @@ export default function Page() {
         </div>
         <button className="btn btn-primary">Submit</button>
       </form>
+
+      <div className="mx-auto max-w-screen-md mt-10">
+        <h1 className="text-md font-bold text-center mb-10">Tasks</h1>
+        <table className="table-auto w-full">
+          <thead>
+            <tr className="bg-gray-200">
+              <th>Task</th>
+              <th>Category</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tasks.length === 0 ? (
+              <tr>
+                <td colSpan={3} className="p-4 text-center">
+                  Loading...
+                </td>
+              </tr>
+            ) : (
+              tasks.map((task, index) => (
+                <tr
+                  key={task._id}
+                  className={index % 2 === 0 ? "bg-white" : "bg-gray-100"}
+                >
+                  <td>{task.name}</td>
+                  <td>{task.categoryName}</td>
+                  <td>edit | delete</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </>
   );
 }

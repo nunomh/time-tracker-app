@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { getTasksTimeTable } from "../actions/trackController";
+import { getTasksFromUserTimeTable } from "../actions/trackController";
 
 export default function TasksTimeTable() {
   const [tracks, setTasks] = useState([]);
 
   useEffect(() => {
     async function fetchTasks() {
-      const result = await getTasksTimeTable();
+      const result = await getTasksFromUserTimeTable();
       setTasks(result);
     }
     fetchTasks();
@@ -38,7 +38,7 @@ export default function TasksTimeTable() {
               tracks.map((track, index) => (
                 <tr
                   key={track.taskId}
-                  className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}
+                  className={index % 2 === 0 ? "bg-white" : "bg-gray-100"}
                 >
                   <td className="p-4">{track.taskName}</td>
                   <td className="p-4">

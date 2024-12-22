@@ -1,10 +1,32 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { createCategory } from "../../actions/categoryController";
+import { getCategoriesFromUser } from "../../actions/categoryController";
 
 export default function Page() {
-  const [formState, formAction] = React.useActionState(createCategory, {});
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    async function fetchCategories() {
+      const result = await getCategoriesFromUser();
+      setCategories(result);
+    }
+    fetchCategories();
+  }, []);
+
+  const [formState, formAction] = React.useActionState(
+    async (prevState, formData) => {
+      const result = await createCategory(prevState, formData);
+      if (result.success) {
+        const updatedCategories = await getCategoriesFromUser();
+        setCategories(updatedCategories);
+      }
+      return result;
+    },
+    {}
+  );
+
   return (
     <>
       <h2 className="text-center text-2xl text-gray-600 mb-5">Categories</h2>
@@ -38,6 +60,37 @@ export default function Page() {
         </div>
         <button className="btn btn-primary">Submit</button>
       </form>
+
+      <div className="mx-auto max-w-screen-md mt-10">
+        <h1 className="text-md font-bold text-center mb-10">Categories</h1>
+        <table className="table-auto w-full">
+          <thead>
+            <tr className="bg-gray-200">
+              <th>Category</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {categories.length === 0 ? (
+              <tr>
+                <td colSpan={3} className="p-4 text-center">
+                  Loading...
+                </td>
+              </tr>
+            ) : (
+              categories.map((category, index) => (
+                <tr
+                  key={category._id}
+                  className={index % 2 === 0 ? "bg-white" : "bg-gray-100"}
+                >
+                  <td>{category.name}</td>
+                  <td>edit | delete</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </>
   );
 }

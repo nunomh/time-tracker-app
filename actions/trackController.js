@@ -91,7 +91,7 @@ export const getTracks = async function ()
     return tracks;
 };
 
-export const getTasksTimeTable = async function ()
+export const getTasksFromUserTimeTable = async function ()
 {
     const user = await getUserFromCookie();
     const tracksCollection = await getCollection("tracks");

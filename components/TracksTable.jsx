@@ -38,7 +38,7 @@ export default function TracksTable() {
               tracks.map((track, index) => (
                 <tr
                   key={track.categoryId}
-                  className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}
+                  className={index % 2 === 0 ? "bg-white" : "bg-gray-100"}
                 >
                   <td className="p-4">{track.categoryName}</td>
                   <td className="p-4">

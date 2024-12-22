@@ -5,7 +5,7 @@ import { getCollection } from "../lib/db.js";
 import { getUserFromCookie } from "../lib/getUser";
 
 
-export const getCategories = async function ()
+export const getCategoriesFromUser = async function ()
 {
     const user = await getUserFromCookie();
     const categoriesCollection = await getCollection("categories");

@@ -35,7 +35,7 @@ export const createTask = async function (prevState, formData)
     return { success: true }
 }
 
-export const getTasks = async function ()
+export const getTasksFromUser = async function ()
 {
     const user = await getUserFromCookie();
     const tasksCollection = await getCollection("tasks");

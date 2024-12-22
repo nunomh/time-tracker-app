@@ -3,14 +3,14 @@
 import { useFormState, useFormStatus } from "react-dom";
 import { createTrack } from "../actions/trackController";
 import React, { useState, useEffect } from "react";
-import { getTasks } from "../actions/tasksController";
+import { getTasksFromUser } from "../actions/tasksController";
 
 export default function NewTackForm({ onSuccess }) {
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
     async function fetchTasks() {
-      const result = await getTasks();
+      const result = await getTasksFromUser();
       setTasks(result);
     }
     fetchTasks();
