@@ -25,7 +25,7 @@ export default function Page() {
     <>
       <h2 className="text-center text-2xl text-gray-600 mb-5">Categories</h2>
 
-      <CategoryForm onSuccess={handleFormSuccess} />
+      <CategoryForm actionToPerform="create" onSuccess={handleFormSuccess} />
 
       <div className="mx-auto max-w-screen-md mt-10">
         <h1 className="text-md font-bold text-center mb-10">Categories</h1>

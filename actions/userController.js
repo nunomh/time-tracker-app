@@ -61,7 +61,6 @@ export const logout = async function ()
     redirect("/");
 }
 
-
 export const register = async function (prevState, formData)
 {
     const errors = {}

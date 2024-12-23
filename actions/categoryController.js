@@ -50,3 +50,35 @@ export const createCategory = async function (prevState, formData)
 
     return { success: true }
 }
+
+export const editCategory = async function (prevState, formData)
+{
+    const user = await getUserFromCookie();
+
+    const errors = {};
+
+    const myCategory = {
+        name: formData.get("category"),
+        author: ObjectId.createFromHexString(user.userId)
+    }
+
+    if (typeof myCategory.name != "string") myCategory.name = "";
+
+    myCategory.name = myCategory.name.trim();
+
+    if (myCategory.name == "") errors.category = "You must enter a value";
+
+
+    if (errors.category)
+    {
+        return { errors, success: false }
+    }
+
+    const categoriesCollection = await getCollection("categories");
+    const newCategory = await categoriesCollection.updateOne(
+        { _id: ObjectId.createFromHexString(formData.get("_id")) },
+        { $set: { name: myCategory.name } }
+    );
+
+    return { success: true }
+}

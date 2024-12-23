@@ -1,12 +1,19 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { createCategory } from "../actions/categoryController";
+import { createCategory, editCategory } from "../actions/categoryController";
 
-export default function CategoryForm({ onSuccess }) {
+export default function CategoryForm({ actionToPerform, onSuccess, category }) {
+  let currentAction;
+  if (actionToPerform === "create") {
+    currentAction = createCategory;
+  } else if (actionToPerform === "edit") {
+    currentAction = editCategory;
+  }
+
   const [formState, formAction] = React.useActionState(
     async (prevState, formData) => {
-      const result = await createCategory(prevState, formData);
+      const result = await currentAction(prevState, formData);
       if (result.success && onSuccess) {
         onSuccess(); // Notify parent about the successful submission
       }
@@ -45,6 +52,11 @@ export default function CategoryForm({ onSuccess }) {
             </div>
           )}
         </div>
+        <input
+          type="hidden"
+          name="category_id"
+          defaultValue={category?._id.toString()}
+        />
         <button className="btn btn-primary">Submit</button>
       </form>
     </>
