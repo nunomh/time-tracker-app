@@ -1,5 +1,6 @@
 "use client";
 
+import { redirect } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { createCategory, editCategory } from "../actions/categoryController";
 
@@ -14,10 +15,14 @@ export default function CategoryForm({ actionToPerform, onSuccess, category }) {
   const [formState, formAction] = React.useActionState(
     async (prevState, formData) => {
       const result = await currentAction(prevState, formData);
-      if (result.success && onSuccess) {
-        onSuccess(); // Notify parent about the successful submission
+      if (actionToPerform === "create") {
+        if (result.success && onSuccess) {
+          onSuccess(); // Notify parent about the successful submission
+        }
+        return result;
+      } else if (actionToPerform === "edit") {
+        return redirect("/categories");
       }
-      return result;
     },
     {}
   );
@@ -32,6 +37,7 @@ export default function CategoryForm({ actionToPerform, onSuccess, category }) {
             type="text"
             placeholder="Category"
             className="input input-bordered w-full max-w-xs"
+            defaultValue={category?.name}
           />
           {formState.errors?.category && (
             <div role="alert" className="alert alert-warning">

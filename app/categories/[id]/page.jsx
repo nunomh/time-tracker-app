@@ -1,6 +1,7 @@
 import { getCollection } from "../../../lib/db";
 import CategoryForm from "../../../components/CategoryForm";
 import { ObjectId } from "mongodb";
+import { validateSession } from "../../../lib/getUser";
 
 async function getDoc(id) {
   const categoriesCollection = await getCollection("categories");
@@ -13,8 +14,11 @@ async function getDoc(id) {
   };
 }
 
-export default async function Page(props) {
-  const doc = await getDoc(props.params?.id);
+export default async function Page({ params }) {
+  await validateSession();
+
+  const { id } = await params;
+  const doc = await getDoc(id);
 
   return (
     <div>

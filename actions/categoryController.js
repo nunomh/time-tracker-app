@@ -2,11 +2,12 @@
 
 import { ObjectId } from "mongodb";
 import { getCollection } from "../lib/db.js";
-import { getUserFromCookie } from "../lib/getUser";
+import { getUserFromCookie, validateSession } from "../lib/getUser";
 
 
 export const getCategoriesFromUser = async function ()
 {
+    await validateSession();
     const user = await getUserFromCookie();
     const categoriesCollection = await getCollection("categories");
     const categories = await categoriesCollection
@@ -75,10 +76,17 @@ export const editCategory = async function (prevState, formData)
     }
 
     const categoriesCollection = await getCollection("categories");
-    const newCategory = await categoriesCollection.updateOne(
-        { _id: ObjectId.createFromHexString(formData.get("_id")) },
-        { $set: { name: myCategory.name } }
-    );
+
+    let categoryId = formData.get("category_id");
+    if (typeof categoryId != "string") categoryId = "";
+
+    // make sure the user is the author of the category being edited
+
+    const category = await categoriesCollection.findOne({ _id: ObjectId.createFromHexString(categoryId), author: ObjectId.createFromHexString(user.userId) });
+
+    if (!category) return { errors: { category: "You are not the author of this category" }, success: false };
+
+    await categoriesCollection.updateOne({ _id: ObjectId.createFromHexString(categoryId) }, { $set: { name: myCategory.name } });
 
     return { success: true }
 }
