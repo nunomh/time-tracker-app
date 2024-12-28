@@ -1,10 +1,10 @@
-import { getCollection } from "../../../lib/db";
-import CategoryForm from "../../../components/CategoryForm";
-import { ObjectId } from "mongodb";
-import { validateSession } from "../../../lib/getUser";
+import { getCollection } from '../../../lib/db';
+import CategoryForm from '../../../components/CategoryForm';
+import { ObjectId } from 'mongodb';
+import { validateSession } from '../../../lib/getUser';
 
 async function getDoc(id) {
-  const categoriesCollection = await getCollection("categories");
+  const categoriesCollection = await getCollection('categories');
   const result = await categoriesCollection.findOne({ _id: new ObjectId(id) });
 
   return {
