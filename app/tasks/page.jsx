@@ -1,12 +1,14 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { createTask } from "../../actions/tasksController";
-import { getCategoriesFromUser } from "../../actions/categoryController";
-import { getTasksFromUser } from "../../actions/tasksController";
+import React, { useState, useEffect } from 'react';
+import { getTasksFromUser, deactivateTask, finishTask, getFinishedTasksFromUser } from '../../actions/tasksController';
+import TaskForm from '../../components/TaskForm';
+import Link from 'next/link';
 
 export default function Page() {
   const [tasks, setTasks] = useState([]);
+  const [finishedTasks, setFinishedTasks] = useState([]);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     async function fetchTasks() {
@@ -14,76 +16,36 @@ export default function Page() {
       setTasks(result);
     }
     fetchTasks();
-  }, []);
-
-  const [categories, setCategories] = useState([]);
+  }, [refreshKey]);
 
   useEffect(() => {
-    async function fetchCategories() {
-      const result = await getCategoriesFromUser();
-      setCategories(result);
+    async function fetchFinishedTasks() {
+      const result = await getFinishedTasksFromUser();
+      setFinishedTasks(result);
     }
-    fetchCategories();
-  }, []);
+    fetchFinishedTasks();
+  }, [refreshKey]);
 
-  const [formState, formAction] = React.useActionState(
-    async (prevState, formData) => {
-      const result = await createTask(prevState, formData);
-      if (result.success) {
-        const updatedTasks = await getTasksFromUser();
-        setTasks(updatedTasks);
-      }
-      return result;
-    },
-    {}
-  );
+  const handleFormSuccess = () => {
+    setRefreshKey(prevKey => prevKey + 1); // Trigger re-fetch after form submission
+  };
+
+  const handleDeactivateTaskSuccess = () => {
+    setRefreshKey(prevKey => prevKey + 1); // Trigger re-fetch after deactivate
+  };
+
+  const handleFinishTaskSuccess = () => {
+    setRefreshKey(prevKey => prevKey + 1); // Trigger re-fetch after deactivate
+  };
 
   return (
     <>
       <h2 className="text-center text-2xl text-gray-600 mb-5">Tasks</h2>
-      <form action={formAction} className="max-w-xs mx-auto">
-        <div className="mb-3">
-          <input
-            name="task"
-            autoComplete="off"
-            type="text"
-            placeholder="Task"
-            className="input input-bordered w-full max-w-xs"
-          />
-          {formState.errors?.task && (
-            <div role="alert" className="alert alert-warning">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 shrink-0 stroke-current"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                />
-              </svg>
-              <span>{formState.errors?.category}</span>
-            </div>
-          )}
-        </div>
-        <div>
-          <label htmlFor="category">Choose a category:</label>
-          <select id="category" name="category">
-            {categories.map((category) => (
-              <option key={category._id} value={category._id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <button className="btn btn-primary">Submit</button>
-      </form>
+
+      <TaskForm actionToPerform="create" onSuccess={handleFormSuccess} />
 
       <div className="mx-auto max-w-screen-md mt-10">
-        <h1 className="text-md font-bold text-center mb-10">Tasks</h1>
+        <h1 className="text-md font-bold text-center mb-10">Active Tasks</h1>
         <table className="table-auto w-full">
           <thead>
             <tr className="bg-gray-200">
@@ -101,13 +63,59 @@ export default function Page() {
               </tr>
             ) : (
               tasks.map((task, index) => (
-                <tr
-                  key={task._id}
-                  className={index % 2 === 0 ? "bg-white" : "bg-gray-100"}
-                >
+                <tr key={task._id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-100'}>
                   <td>{task.name}</td>
                   <td>{task.categoryName}</td>
-                  <td>edit | delete</td>
+                  <td>
+                    <Link href={`/tasks/${task._id}`}>Edit</Link>
+                    <form action={finishTask} onSubmit={handleFinishTaskSuccess}>
+                      <input name="task_id" type="hidden" defaultValue={task._id.toString()} />
+                      <button type="submit">Finish</button>
+                    </form>{' '}
+                    <form action={deactivateTask} onSubmit={handleDeactivateTaskSuccess}>
+                      <input name="task_id" type="hidden" defaultValue={task._id.toString()} />
+                      <button type="submit">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+      <div className="mx-auto max-w-screen-md mt-10">
+        <h1 className="text-md font-bold text-center mb-10">Finished Tasks</h1>
+        <table className="table-auto w-full">
+          <thead>
+            <tr className="bg-gray-200">
+              <th>Task</th>
+              <th>Category</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {finishedTasks.length === 0 ? (
+              <tr>
+                <td colSpan={3} className="p-4 text-center">
+                  Loading...
+                </td>
+              </tr>
+            ) : (
+              finishedTasks.map((task, index) => (
+                <tr key={task._id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-100'}>
+                  <td>{task.name}</td>
+                  <td>{task.categoryName}</td>
+                  <td>
+                    <Link href={`/tasks/${task._id}`}>Edit</Link> |
+                    {/* <form action={finishTask} onSubmit={handleFinishTaskSuccess}>
+                      <input name="task_id" type="hidden" defaultValue={task._id.toString()} />
+                      <button type="submit">Finish</button>
+                    </form> */}
+                    <form action={deactivateTask} onSubmit={handleDeactivateTaskSuccess}>
+                      <input name="task_id" type="hidden" defaultValue={task._id.toString()} />
+                      <button type="submit">Delete</button>
+                    </form>
+                  </td>
                 </tr>
               ))
             )}

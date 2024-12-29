@@ -4,8 +4,19 @@ import { redirect } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 
 import { createTask, editTask } from '../actions/tasksController';
+import { getCategoriesFromUser } from '../actions/categoryController';
 
 export default function TaskForm({ actionToPerform, onSuccess, task }) {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    async function fetchCategories() {
+      const result = await getCategoriesFromUser();
+      setCategories(result);
+    }
+    fetchCategories();
+  }, []);
+
   let currentAction;
   if (actionToPerform === 'create') {
     currentAction = createTask;
@@ -16,7 +27,8 @@ export default function TaskForm({ actionToPerform, onSuccess, task }) {
   const [formState, formAction] = React.useActionState(async (prevState, formData) => {
     const result = await currentAction(prevState, formData);
     if (actionToPerform === 'create') {
-      if (result.success && onSuccess) {
+      if (result.success) {
+        console.log('ok2');
         onSuccess(); // Notify parent about the successful submission
       }
       return result;
@@ -55,6 +67,16 @@ export default function TaskForm({ actionToPerform, onSuccess, task }) {
               <span>{formState.errors?.task}</span>
             </div>
           )}
+        </div>
+        <div>
+          <label htmlFor="category">Choose a category:</label>
+          <select id="category" name="category">
+            {categories.map(category => (
+              <option key={category._id} value={category._id} defaultValue={task?.category?._id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
         </div>
         <input type="hidden" name="task_id" defaultValue={task?._id.toString()} />
         <button className="btn btn-primary">Submit</button>
