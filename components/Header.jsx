@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { getUserFromCookie } from "../lib/getUser";
-import { logout } from "../actions/userController";
+import Link from 'next/link';
+import { getUserFromCookie } from '../lib/getUser';
+import { logout } from '../actions/userController';
 
 export default async function Header() {
   const user = await getUserFromCookie();
@@ -10,7 +10,7 @@ export default async function Header() {
       <div className="navbar bg-base-100">
         <div className="container mx-auto">
           <div className="flex-1">
-            <Link href={"/"} className="btn btn-ghost text-xl">
+            <Link href={'/'} className="btn btn-ghost text-xl">
               Time Tracker
             </Link>
           </div>
@@ -18,6 +18,9 @@ export default async function Header() {
             <ul className="menu menu-horizontal px-1">
               {user && (
                 <>
+                  <li>
+                    <Link href="/tracks">Tracks</Link>
+                  </li>
                   <li>
                     <Link href="/tasks">Tasks</Link>
                   </li>
