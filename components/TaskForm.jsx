@@ -28,7 +28,6 @@ export default function TaskForm({ actionToPerform, onSuccess, task }) {
     const result = await currentAction(prevState, formData);
     if (actionToPerform === 'create') {
       if (result.success) {
-        console.log('ok2');
         onSuccess(); // Notify parent about the successful submission
       }
       return result;

@@ -2,10 +2,11 @@
 
 import { ObjectId } from "mongodb";
 import { getCollection } from "../lib/db.js";
-import { getUserFromCookie } from "../lib/getUser";
+import { getUserFromCookie, validateSession } from "../lib/getUser";
 
 export const createTrack = async function (prevState, formData)
 {
+	await validateSession();
 	const user = await getUserFromCookie();
 
 	const taskValue = formData.get("task"); // Get the combined value
@@ -13,13 +14,18 @@ export const createTrack = async function (prevState, formData)
 
 	const errors = {};
 
+	console.log("formData.get('time')", formData.get("time"))
+
 	const myTrack = {
 		time: parseInt(formData.get("time")),
 		createdDate: new Date(),
+		modifiedDate: new Date(),
 		taskId: new ObjectId(taskId),
 		categoryId: new ObjectId(categoryId),
 		author: new ObjectId(user.userId),
 	};
+
+	console.log("myTrack", myTrack)
 
 	if (errors.task)
 	{
@@ -32,8 +38,31 @@ export const createTrack = async function (prevState, formData)
 	return { success: true };
 };
 
+export const editTrack = async function (formData)
+{
+	await validateSession();
+	const tracksCollection = await getCollection("tracks");
+
+	const myTrack = {
+		time: parseInt(formData.get("time")),
+		modifiedDate: new Date(),
+		taskId: new ObjectId(formData.get("task")),
+		categoryId: new ObjectId(formData.get("category"))
+	};
+
+	const result = await tracksCollection.updateOne({ _id: new ObjectId(formData.get("trackId")) }, { $set: myTrack });
+
+	if (result.modifiedCount === 0)
+	{
+		return { success: false, errors: { trackId: "Track not found" } };
+	}
+
+	return { success: true };
+};
+
 export const getTracks = async function ()
 {
+	await validateSession();
 	const user = await getUserFromCookie();
 	const tracksCollection = await getCollection("tracks");
 	const categoriesCollection = await getCollection("categories");
@@ -93,6 +122,7 @@ export const getTracks = async function ()
 
 export const getTasksFromUserTimeTable = async function ()
 {
+	await validateSession();
 	const user = await getUserFromCookie();
 	const tracksCollection = await getCollection("tracks");
 	const tasksCollection = await getCollection("tasks");
@@ -164,6 +194,7 @@ export const getTasksFromUserTimeTable = async function ()
 
 export const getRecentTracksFromUser = async function (limit = 10)
 {
+	await validateSession();
 	const user = await getUserFromCookie();
 	const tracksCollection = await getCollection("tracks");
 	const tasksCollection = await getCollection("tasks");
@@ -188,8 +219,8 @@ export const getRecentTracksFromUser = async function (limit = 10)
 		},
 		{
 			$project: {
-				_id: 0,
-				trackId: { $toString: "$_id" },
+				_id: { $toString: "$_id" },
+				// trackId: { $toString: "$_id" },
 				time: 1,
 				taskName: "$taskInfo.name",
 				author: { $toString: "$author" },
@@ -209,6 +240,7 @@ export const getRecentTracksFromUser = async function (limit = 10)
 
 export const getAllTracksAndSumTime = async function ()
 {
+	await validateSession();
 	const user = await getUserFromCookie(); // Fetch the authenticated user
 	const tracksCollection = await getCollection("tracks"); // Get the tracks collection
 
@@ -246,8 +278,11 @@ export const getAllTracksAndSumTime = async function ()
 	return result[0]; // Return the aggregated result for the user
 };
 
+
+
 export const deleteTrack = async function (trackId)
 {
+	await validateSession();
 	const tracksCollection = await getCollection("tracks");
 	const result = await tracksCollection.deleteOne({ _id: new ObjectId(trackId) });
 

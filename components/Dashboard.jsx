@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import NewTackForm from "../components/NewTrackForm";
-import TracksTable from "../components/TracksTable";
-import RecentTracksList from "../components/RecentTracksList";
-import { getAllTracksAndSumTime } from "../actions/trackController"; // Adjust the import path as needed
-import TasksTimeTable from "./TasksTimeTable";
+import React, { useState, useEffect } from 'react';
+import TrackForm from './TrackForm';
+import TracksTable from '../components/TracksTable';
+import RecentTracksList from '../components/RecentTracksList';
+import { getAllTracksAndSumTime } from '../actions/trackController'; // Adjust the import path as needed
+import TasksTimeTable from './TasksTimeTable';
 
 export default function InteractivePage({ user }) {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -18,7 +18,7 @@ export default function InteractivePage({ user }) {
         const result = await getAllTracksAndSumTime();
         setTotalTime(result.totalTime || 0); // Default to 0 if no tracks
       } catch (error) {
-        console.error("Failed to fetch total time:", error);
+        console.error('Failed to fetch total time:', error);
         setTotalTime(0);
       }
     };
@@ -27,7 +27,7 @@ export default function InteractivePage({ user }) {
   }, [refreshKey]);
 
   const handleFormSuccess = () => {
-    setRefreshKey((prevKey) => prevKey + 1); // Trigger re-fetch after form submission
+    setRefreshKey(prevKey => prevKey + 1); // Trigger re-fetch after form submission
   };
 
   return (
@@ -35,26 +35,24 @@ export default function InteractivePage({ user }) {
       <div className="">
         <h1 className="text-md font-bold">Welcome back, {user.name}!</h1>
         <small className="text-sm text-gray-500">
-          tracking since{" "}
+          tracking since{' '}
           {user.createdDate
-            ? new Date(user.createdDate).toLocaleDateString("en-GB", {
-                day: "2-digit",
-                month: "long",
-                year: "numeric",
+            ? new Date(user.createdDate).toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric',
               })
-            : "N/A"}
+            : 'N/A'}
         </small>
       </div>
       <div className="">
         <p className="text-md text-gray-600">
-          You have tracked a total of{" "}
-          {totalTime !== null
-            ? `${(totalTime / 60).toFixed(2)} hours`
-            : "Loading..."}
+          You have tracked a total of {totalTime !== null ? `${(totalTime / 60).toFixed(2)} hours` : 'Loading...'}
         </p>
       </div>
       <div className="mt-10">
-        <NewTackForm onSuccess={handleFormSuccess} />
+        <p className="mb-3">Create a new track:</p>
+        <TrackForm onSuccess={handleFormSuccess} actionToPerform="create" />
       </div>
       <div className="mt-10">
         <RecentTracksList key={refreshKey} />
