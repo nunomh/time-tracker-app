@@ -54,7 +54,7 @@ export default function TrackForm({ actionToPerform, onSuccess, track }) {
         <select id="task" name="task">
           {tasks.length > 0 &&
             tasks.map(task => (
-              <option key={task._id} value={`${task._id}:${task.categoryId}`} defaultValue={track?.task?._id}>
+              <option key={task._id} value={`${task._id}:${task.categoryId}`} selected={track?.taskId === task._id}>
                 {task.name}
               </option>
             ))}
@@ -62,7 +62,7 @@ export default function TrackForm({ actionToPerform, onSuccess, track }) {
         </select>
       </div>
       <input type="hidden" name="track_id" defaultValue={track?._id.toString()} />
-      <button className="mb-3 btn btn-primary">Create Track</button>
+      <button className="mb-3 btn btn-primary">Submit</button>
     </form>
   );
 }

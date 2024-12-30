@@ -6,12 +6,15 @@ import TrackForm from '../../../components/TrackForm';
 async function getDoc(id) {
   const tracksCollection = await getCollection('tracks');
   const result = await tracksCollection.findOne({ _id: new ObjectId(id) });
-  console.log(result);
+
   return {
     _id: result._id.toString(),
-    name: result.name,
-    author: result.author.toString(),
+    time: result.time,
+    createdDate: result.createdDate.toISOString(),
+    modifiedDate: result.modifiedDate.toISOString(),
+    taskId: result.taskId.toString(),
     categoryId: result.categoryId.toString(),
+    author: result.author.toString(),
   };
 }
 

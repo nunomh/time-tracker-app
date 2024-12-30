@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { getRecentTracksFromUser } from "../actions/trackController";
+import React, { useState, useEffect } from 'react';
+import { getRecentTracksFromUser } from '../actions/trackController';
 
 export default function RecentTracksList() {
   const [tracks, setTracks] = useState([]);
@@ -42,30 +42,21 @@ export default function RecentTracksList() {
             </tr>
           ) : (
             tracks.map((track, index) => (
-              <tr
-                key={track.trackId}
-                className={index % 2 === 0 ? "bg-white" : "bg-gray-100"}
-              >
+              <tr key={track._id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-100'}>
                 <td className="p-4">{track.taskName}</td>
                 <td className="p-4">{(track.time / 60).toFixed(2)} hours</td>
                 <td className="p-4">
                   {track.createdDate
-                    ? `${new Date(track.createdDate).toLocaleDateString(
-                        "en-GB",
-                        {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                        }
-                      )}, ${new Date(track.createdDate).toLocaleTimeString(
-                        "en-GB",
-                        {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          second: "2-digit",
-                        }
-                      )}`
-                    : "N/A"}
+                    ? `${new Date(track.createdDate).toLocaleDateString('en-GB', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                      })}, ${new Date(track.createdDate).toLocaleTimeString('en-GB', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                      })}`
+                    : 'N/A'}
                 </td>
               </tr>
             ))

@@ -38,23 +38,28 @@ export const createTrack = async function (prevState, formData)
 	return { success: true };
 };
 
-export const editTrack = async function (formData)
+export const editTrack = async function (prevState, formData)
 {
 	await validateSession();
 	const tracksCollection = await getCollection("tracks");
 
+	console.log(formData)
+
+	const taskValue = formData.get("task"); // Get the combined value
+	const [taskId, categoryId] = taskValue.split(":"); // Split by colon
+
 	const myTrack = {
 		time: parseInt(formData.get("time")),
 		modifiedDate: new Date(),
-		taskId: new ObjectId(formData.get("task")),
-		categoryId: new ObjectId(formData.get("category"))
+		taskId: new ObjectId(taskId),
+		categoryId: new ObjectId(categoryId),
 	};
 
-	const result = await tracksCollection.updateOne({ _id: new ObjectId(formData.get("trackId")) }, { $set: myTrack });
+	const result = await tracksCollection.updateOne({ _id: new ObjectId(formData.get("track_id")) }, { $set: myTrack });
 
 	if (result.modifiedCount === 0)
 	{
-		return { success: false, errors: { trackId: "Track not found" } };
+		return { success: false, errors: { track_id: "Track not found" } };
 	}
 
 	return { success: true };
@@ -197,7 +202,6 @@ export const getRecentTracksFromUser = async function (limit = 10)
 	await validateSession();
 	const user = await getUserFromCookie();
 	const tracksCollection = await getCollection("tracks");
-	const tasksCollection = await getCollection("tasks");
 
 	const tracks = await tracksCollection.aggregate([
 		{
@@ -220,7 +224,6 @@ export const getRecentTracksFromUser = async function (limit = 10)
 		{
 			$project: {
 				_id: { $toString: "$_id" },
-				// trackId: { $toString: "$_id" },
 				time: 1,
 				taskName: "$taskInfo.name",
 				author: { $toString: "$author" },
