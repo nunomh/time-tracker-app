@@ -5,6 +5,7 @@ import { getRecentTracksFromUser } from '../actions/trackController';
 
 export default function Page({ isHorizontal = true }) {
     const [tracks, setTracks] = useState([]);
+    const [windowWidth, setWindowWidth] = useState(undefined);
 
     useEffect(() => {
         let isMounted = true;
@@ -22,12 +23,22 @@ export default function Page({ isHorizontal = true }) {
         };
     }, []);
 
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowWidth(window.innerWidth);
+        };
+        window.addEventListener('resize', handleResize);
+        handleResize();
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     const today = new Date();
-    const last15Days = Array.from(
-        { length: 15 },
+    const showTracks = windowWidth < 768 ? 5 : 15;
+    const lastXDays = Array.from(
+        { length: showTracks },
         (_, i) => new Date(today.getTime() - i * 24 * 60 * 60 * 1000)
     ).reverse();
-    const tracksPerDay = last15Days.map(date => {
+    const tracksPerDay = lastXDays.map(date => {
         const dateString = date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
         const count = tracks.filter(
             track =>
@@ -44,7 +55,9 @@ export default function Page({ isHorizontal = true }) {
     return (
         <div className="mx-auto max-w-screen-md mt-10">
             <div>
-                <h2 className="text-md font-bold text-center mb-4">Number of tracks per day within the last 15 days</h2>
+                <h2 className="text-md font-bold text-center mb-4">
+                    Number of tracks per day within the last {showTracks} days
+                </h2>
                 <div className={`flex ${isHorizontal ? 'flex-col' : 'flex justify-center'}`}>
                     {tracksPerDay.map(({ date, count }, index) => (
                         <div key={index} className="flex flex-col items-center mr-2">

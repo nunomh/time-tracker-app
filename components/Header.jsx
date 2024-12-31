@@ -6,16 +6,16 @@ export default async function Header() {
     const user = await getUserFromCookie();
 
     return (
-        <header className="bg-gray-100 shadow-md">
-            <div className="navbar bg-base-100">
+        <header className="bg-black text-gray-300 shadow-md">
+            <div className="navbar">
                 <div className="container mx-auto">
                     <div className="flex-1">
-                        <Link href={'/'} className="btn btn-ghost text-xl">
-                            Time Tracker
+                        <Link href={'/'} className="btn btn-ghost text-xl text-blue-500">
+                            time.tracker
                         </Link>
                     </div>
                     <div className="flex-none">
-                        <ul className="menu menu-horizontal px-1">
+                        <ul className="menu menu-horizontal px-1 text-base font-medium">
                             {user && (
                                 <>
                                     <li>

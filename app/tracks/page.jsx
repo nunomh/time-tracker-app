@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { getRecentTracksFromUser, deleteTrack } from '../../actions/trackController';
 import Link from 'next/link';
-import TracksGraph from '../../components/TracksGraph';
 
 export default function Page() {
     const [tracks, setTracks] = useState([]);
@@ -66,8 +65,6 @@ export default function Page() {
     return (
         <div className="mx-auto max-w-screen-md mt-10">
             <h1 className="text-md font-bold text-center mb-10">Tracks</h1>
-
-            <TracksGraph />
 
             <table className="table-auto w-full mt-6">
                 <thead>
