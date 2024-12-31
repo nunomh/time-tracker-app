@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { getRecentTracksFromUser, deleteTrack } from '../../actions/trackController';
 import Link from 'next/link';
+import TracksGraph from '../../components/TracksGraph';
 
 export default function Page() {
     const [tracks, setTracks] = useState([]);
@@ -14,7 +15,7 @@ export default function Page() {
         let isMounted = true;
 
         async function fetchTracks() {
-            const result = await getRecentTracksFromUser(999);
+            const result = await getRecentTracksFromUser('all');
             if (isMounted) {
                 setTracks(result);
             }
@@ -65,7 +66,10 @@ export default function Page() {
     return (
         <div className="mx-auto max-w-screen-md mt-10">
             <h1 className="text-md font-bold text-center mb-10">Tracks</h1>
-            <table className="table-auto w-full">
+
+            <TracksGraph />
+
+            <table className="table-auto w-full mt-6">
                 <thead>
                     <tr className="bg-gray-200">
                         <th className="p-4">Task Name</th>
@@ -111,6 +115,7 @@ export default function Page() {
                     )}
                 </tbody>
             </table>
+
             <div className="flex justify-center mt-4">{pageLinks}</div>
         </div>
     );

@@ -193,42 +193,43 @@ export const getRecentTracksFromUser = async function (limit = 10) {
     const user = await getUserFromCookie();
     const tracksCollection = await getCollection('tracks');
 
-    const tracks = await tracksCollection
-        .aggregate([
-            {
-                $match: { author: new ObjectId(user.userId) },
+    const aggregatePipeline = [
+        {
+            $match: { author: new ObjectId(user.userId) },
+        },
+        {
+            $lookup: {
+                from: 'tasks',
+                localField: 'taskId',
+                foreignField: '_id',
+                as: 'taskInfo',
             },
-            {
-                $lookup: {
-                    from: 'tasks',
-                    localField: 'taskId',
-                    foreignField: '_id',
-                    as: 'taskInfo',
-                },
+        },
+        {
+            $unwind: {
+                path: '$taskInfo',
+                preserveNullAndEmptyArrays: true,
             },
-            {
-                $unwind: {
-                    path: '$taskInfo',
-                    preserveNullAndEmptyArrays: true,
-                },
+        },
+        {
+            $project: {
+                _id: { $toString: '$_id' },
+                time: 1,
+                taskName: '$taskInfo.name',
+                author: { $toString: '$author' },
+                createdDate: 1,
             },
-            {
-                $project: {
-                    _id: { $toString: '$_id' },
-                    time: 1,
-                    taskName: '$taskInfo.name',
-                    author: { $toString: '$author' },
-                    createdDate: 1,
-                },
-            },
-            {
-                $sort: { createdDate: -1 },
-            },
-            {
-                $limit: limit,
-            },
-        ])
-        .toArray();
+        },
+        {
+            $sort: { createdDate: -1 },
+        },
+    ];
+
+    if (limit !== 'all') {
+        aggregatePipeline.push({ $limit: parseInt(limit, 10) });
+    }
+
+    const tracks = await tracksCollection.aggregate(aggregatePipeline).toArray();
 
     return tracks;
 };
