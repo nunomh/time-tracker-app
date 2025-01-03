@@ -51,7 +51,7 @@ export const login = async function (prevState, formData) {
     cookies().set('timetrackerapp', ourTokenValue, {
         httpOnly: true,
         sameSite: 'strict',
-        maxAge: 60 * 60 * 24,
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
         secure: true, // only send over https if it's not a development environment
     });
 
@@ -121,7 +121,7 @@ export const register = async function (prevState, formData) {
     (await cookies()).set('timetrackerapp', jwtValue, {
         httpOnly: true,
         sameSite: 'strict',
-        maxAge: 60 * 60 * 24 * 7, // 7 days
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
         secure: true,
     });
 

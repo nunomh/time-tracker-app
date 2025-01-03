@@ -33,10 +33,12 @@ export default function InteractivePage({ user }) {
 
     return (
         <>
-            <div className="bg-black container mx-auto p-10">
-                <div className="">
-                    <h1 className="text-md font-bold text-gray-200">Welcome back, {user.name}!</h1>
-                    <small className="text-sm text-gray-500">
+            <div className="bg-gray-900">
+                <div className="container  mx-auto p-8">
+                    <h1 className="text-md text-gray-200">
+                        Welcome back, <strong>{user.name}</strong>!
+                    </h1>
+                    <small className="text-xs text-gray-500">
                         tracking since{' '}
                         {user.createdDate
                             ? new Date(user.createdDate).toLocaleDateString('en-GB', {
@@ -46,9 +48,7 @@ export default function InteractivePage({ user }) {
                               })
                             : 'N/A'}
                     </small>
-                </div>
-                <div className="">
-                    <p className="text-md text-gray-200">
+                    <p className="text-sm text-gray-200">
                         <span
                             title={
                                 totalTime !== null && user.createdDate

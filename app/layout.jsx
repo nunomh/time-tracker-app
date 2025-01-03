@@ -17,6 +17,8 @@ export default function RootLayout({ children }) {
                 <footer className="text-gray-400 text-center text-xs py-5">
                     <p>github.com/nunomh - 2024</p>
                 </footer>
+
+                {/* <script src="../path/to/flowbite/dist/flowbite.min.js"></script> */}
             </body>
         </html>
     );
