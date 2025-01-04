@@ -16,6 +16,7 @@ export default function TrackForm({ actionToPerform, onSuccess, track }) {
         async function fetchTasks() {
             const result = await getTasksFromUser();
             setTasks(result);
+            setFormSubmitting(false);
         }
         fetchTasks();
     }, []);
@@ -28,7 +29,9 @@ export default function TrackForm({ actionToPerform, onSuccess, track }) {
     }
 
     const [formState, formAction] = React.useActionState(async (prevState, formData) => {
+        setFormSubmitting(true);
         const result = await currentAction(prevState, formData);
+        setFormSubmitting(false);
         if (actionToPerform === 'create') {
             if (result.success) {
                 onSuccess(); // Notify parent about the successful submission
@@ -38,6 +41,8 @@ export default function TrackForm({ actionToPerform, onSuccess, track }) {
             return redirect('/tracks');
         }
     }, {});
+
+    const [formSubmitting, setFormSubmitting] = useState(true);
 
     return (
         <form action={formAction} className="max-w-xs mx-auto">
@@ -49,6 +54,7 @@ export default function TrackForm({ actionToPerform, onSuccess, track }) {
                     placeholder="Time in minutes"
                     className="input input-bordered w-full max-w-xs"
                     defaultValue={track?.time}
+                    disabled={formSubmitting}
                 />
             </div>
             <div className="mb-3">
@@ -58,6 +64,7 @@ export default function TrackForm({ actionToPerform, onSuccess, track }) {
                     name="task"
                     value={selectedTask} // Controlled value
                     onChange={e => setSelectedTask(e.target.value)} // Update state on change
+                    disabled={formSubmitting}
                 >
                     {tasks.length > 0 &&
                         tasks.map(task => (
@@ -69,7 +76,9 @@ export default function TrackForm({ actionToPerform, onSuccess, track }) {
                 </select>
             </div>
             <input type="hidden" name="track_id" defaultValue={track?._id.toString()} />
-            <button className="mb-3 btn btn-primary">Submit</button>
+            <button className="mb-3 btn btn-primary" disabled={formSubmitting}>
+                {formSubmitting ? 'Loading...' : 'Submit'}
+            </button>
         </form>
     );
 }

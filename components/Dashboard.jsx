@@ -72,7 +72,7 @@ export default function InteractivePage({ user }) {
                     <TrackForm onSuccess={handleFormSuccess} actionToPerform="create" />
                 </div>
                 <div className="mt-10">
-                    <TracksGraph isHorizontal={false} />
+                    <TracksGraph isHorizontal={false} key={refreshKey} />
                 </div>
                 <div className="mt-10">
                     <RecentTracksList key={refreshKey} />

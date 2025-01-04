@@ -42,7 +42,7 @@ export const login = async function (prevState, formData) {
             name: user.username,
             userId: user._id,
             createdDate: user.createdDate,
-            exp: Math.floor(Date.now() / 1000 + 60 * 60 * 24),
+            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7, // 7 days, exp is defined as the number of seconds (not milliseconds)
         },
         process.env.JWTSECRET
     );
@@ -51,7 +51,7 @@ export const login = async function (prevState, formData) {
     cookies().set('timetrackerapp', ourTokenValue, {
         httpOnly: true,
         sameSite: 'strict',
-        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days, in milliseconds
         secure: true, // only send over https if it's not a development environment
     });
 
@@ -112,7 +112,7 @@ export const register = async function (prevState, formData) {
             name: ourUser.username,
             userId: userId,
             createdDate: new Date(),
-            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
+            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7, // 7 days, exp is defined as the number of seconds (not milliseconds)
         },
         process.env.JWTSECRET
     );
@@ -121,7 +121,7 @@ export const register = async function (prevState, formData) {
     (await cookies()).set('timetrackerapp', jwtValue, {
         httpOnly: true,
         sameSite: 'strict',
-        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days, in milliseconds
         secure: true,
     });
 

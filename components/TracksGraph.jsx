@@ -33,43 +33,45 @@ export default function Page({ isHorizontal = true }) {
     }, []);
 
     const today = new Date();
-    const showTracks = windowWidth < 768 ? 5 : 15;
+    const showTracks = windowWidth < 768 ? 5 : 10;
     const lastXDays = Array.from(
         { length: showTracks },
         (_, i) => new Date(today.getTime() - i * 24 * 60 * 60 * 1000)
     ).reverse();
-    const tracksPerDay = lastXDays.map(date => {
+    const hoursPerDay = lastXDays.map(date => {
         const dateString = date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
-        const count = tracks.filter(
-            track =>
-                track.createdDate &&
-                new Date(track.createdDate).toLocaleDateString('en-GB', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                }) === dateString
-        ).length;
-        return { date, count };
+        const totalHours = tracks
+            .filter(
+                track =>
+                    track.createdDate &&
+                    new Date(track.createdDate).toLocaleDateString('en-GB', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                    }) === dateString
+            )
+            .reduce((sum, track) => sum + track.time / 60, 0);
+        return { date, totalHours };
     });
 
     return (
         <div className="mx-auto max-w-screen-md mt-10">
             <div>
                 <h2 className="text-md font-bold text-center mb-4">
-                    Number of tracks per day within the last {showTracks} days
+                    Total hours per day within the last {showTracks} days
                 </h2>
                 <div className={`flex ${isHorizontal ? 'flex-col' : 'flex justify-center'}`}>
-                    {tracksPerDay.map(({ date, count }, index) => (
+                    {hoursPerDay.map(({ date, totalHours }, index) => (
                         <div key={index} className="flex flex-col items-center mr-2">
                             <div
                                 className="bg-gray-200"
                                 style={{
-                                    width: isHorizontal ? `${count * 12}px` : '12px',
-                                    height: isHorizontal ? '12px' : `${count * 12}px`,
+                                    width: isHorizontal ? `${totalHours * 12}px` : '12px',
+                                    height: isHorizontal ? '12px' : `${totalHours * 12}px`,
                                 }}
                             />
                             <div className="text-sm ml-2">
-                                {count} tracks on{' '}
+                                {totalHours.toFixed(2)} hours on{' '}
                                 {date.toLocaleDateString('en-GB', {
                                     day: '2-digit',
                                     month: '2-digit',
