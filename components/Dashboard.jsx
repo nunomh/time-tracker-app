@@ -68,10 +68,9 @@ export default function InteractivePage({ user }) {
             </div>
             <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12">
                 <div className="">
-                    <p className="max-w-xs mx-auto mb-3">Create a new track:</p>
                     <TrackForm onSuccess={handleFormSuccess} actionToPerform="create" />
                 </div>
-                <div className="mt-10">
+                <div className="mt-14">
                     <TracksGraph isHorizontal={false} key={refreshKey} />
                 </div>
                 <div className="mt-10">

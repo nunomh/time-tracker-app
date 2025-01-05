@@ -64,7 +64,7 @@ export default function Page() {
 
     return (
         <div className="mx-auto max-w-screen-md mt-10">
-            <h1 className="text-md font-bold text-center mb-10">Tracks</h1>
+            <h2 className="text-center text-2xl text-gray-600 mb-5">Tracks</h2>
 
             <table className="table-auto w-full mt-6">
                 <thead>

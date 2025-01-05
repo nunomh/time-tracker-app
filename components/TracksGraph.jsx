@@ -34,6 +34,7 @@ export default function Page({ isHorizontal = true }) {
 
     const today = new Date();
     const showTracks = windowWidth < 768 ? 5 : 10;
+    windowWidth < 768 ? (isHorizontal = true) : (isHorizontal = false);
     const lastXDays = Array.from(
         { length: showTracks },
         (_, i) => new Date(today.getTime() - i * 24 * 60 * 60 * 1000)
@@ -66,8 +67,8 @@ export default function Page({ isHorizontal = true }) {
                             <div
                                 className="bg-gray-200"
                                 style={{
-                                    width: isHorizontal ? `${totalHours * 12}px` : '12px',
-                                    height: isHorizontal ? '12px' : `${totalHours * 12}px`,
+                                    width: isHorizontal ? `${totalHours * 12}px` : '18px',
+                                    height: isHorizontal ? '18px' : `${totalHours * 12}px`,
                                 }}
                             />
                             <div className="text-sm ml-2">
